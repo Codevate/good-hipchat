@@ -1,0 +1,32 @@
+{
+  "name": "good-hipchat",
+  "version": "0.0.0",
+  "description": "Hipchat notifications",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/firstandthird/good-hipchat.git"
+  },
+  "keywords": [
+    "good",
+    "hipchat",
+    "notifications"
+  ],
+  "author": "First+Third",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/firstandthird/good-hipchat/issues"
+  },
+  "homepage": "https://github.com/firstandthird/good-hipchat",
+  "dependencies": {
+    "good-reporter": "^3.0.1",
+    "hipchatter": "^0.1.3"
+  },
+  "devDependencies": {
+    "good": "^5.1.0",
+    "hapi": "^8.0.0"
+  }
+}
