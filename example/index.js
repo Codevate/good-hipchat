@@ -13,7 +13,8 @@ var options = {
         room: 'Room',
         roomToken: '1234',
         color: 'red',
-        debug: true
+        debug: true,
+        tags: ['error']
       }
     ]
   }]

@@ -1,5 +1,6 @@
 var GoodReporter = require('good-reporter');
 var Hipchatter = require('hipchatter');
+var _ = require('lodash-node');
 
 var GoodHipchat = function(events, options) {
   this.reporter = new GoodReporter(events);
@@ -22,6 +23,12 @@ GoodHipchat.prototype.start = function(emitter, callback) {
 GoodHipchat.prototype.stop = function(){};
 
 GoodHipchat.prototype._report = function(event, eventData) {
+  var tags = _.intersection(this.options.tags, eventData.tags);
+
+  if(!tags.length) {
+    return;
+  }
+
   var message = {
     token: this.options.roomToken,
     message: eventData.data,
@@ -30,7 +37,7 @@ GoodHipchat.prototype._report = function(event, eventData) {
   };
 
   if(this.options.debug) {
-    console.log(message);
+    console.log(message, eventData);
   } else {
     this.hipchat.notify(this.options.room, message, function(err) {
       if(err) {
