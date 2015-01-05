@@ -25,7 +25,7 @@ GoodHipchat.prototype.stop = function(){};
 GoodHipchat.prototype._report = function(event, eventData) {
   var tags = _.intersection(this.options.tags, eventData.tags);
 
-  if(!tags.length) {
+  if(!tags.length && this.options.tags.length) {
     return;
   }
 
