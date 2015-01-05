@@ -13,7 +13,10 @@ var options = {
         room: 'Room',
         roomToken: '1234',
         color: 'red',
-        debug: true
+        debug: true,
+        formatMessage: function(event) {
+          return event.error.toString() + ' Details: http://example.com?e=something';
+        }
       }
     ]
   }]
@@ -35,7 +38,7 @@ server.register({
     method: 'GET',
     path: '/',
     handler: function(request, reply) {
-      reply(test);
+      reply(new Error('something'));
     }
   });
 });

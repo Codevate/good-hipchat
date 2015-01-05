@@ -8,7 +8,16 @@ var defaults = {
   tags: [],
   color: 'yellow',
   notify: false,
-  debug: false
+  debug: false,
+  formatMessage: function(event) {
+    if(event.message) {
+      return event.message;
+    } else if(event.error) {
+      return event.error.toString();
+    } else {
+      return event;
+    }
+  }
 };
 
 var GoodHipchat = function(events, options) {
@@ -43,23 +52,9 @@ GoodHipchat.prototype._report = function(event, eventData) {
 
   var text = '';
 
-  if(eventData.data) {
-    if(eventData.data.message) {
-      text = eventData.data.message;
-    } else {
-      text = eventData.data;
-    }
-  } else if(eventData.message) {
-    text = eventData.message;
-  } else if(eventData.error) {
-    text = eventData.error.toString();
-  } else {
-    text = eventData;
-  }
-
   var message = {
     token: this.options.roomToken,
-    message: text,
+    message: this.options.formatMessage(eventData),
     notify: this.options.notify,
     color: this.options.color
   };
