@@ -1,4 +1,9 @@
 
+0.0.5 / 2015-01-05
+==================
+
+  * Added formatMessage option to customize output text.
+
 0.0.4 / 2015-01-05
 ==================
 
