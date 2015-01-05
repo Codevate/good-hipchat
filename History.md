@@ -1,4 +1,9 @@
 
+0.0.3 / 2015-01-05
+==================
+
+  * Added defaults and some color to debug output.
+
 0.0.2 / 2015-01-05
 ==================
 
