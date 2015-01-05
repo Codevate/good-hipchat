@@ -1,11 +1,22 @@
 var GoodReporter = require('good-reporter');
 var Hipchatter = require('hipchatter');
 var _ = require('lodash-node');
+var Hoek = require('hoek');
+var chalk = require('chalk');
+
+var defaults = {
+  tags: [],
+  color: 'red',
+  debug: false
+};
 
 var GoodHipchat = function(events, options) {
-  this.reporter = new GoodReporter(events);
 
-  this.options = options;
+  this.options = Hoek.clone(options);
+
+  this.options = Hoek.applyToDefaults(defaults, this.options);
+
+  this.reporter = new GoodReporter(events);
 
   this.reporter._report = this._report.bind(this);
   this.reporter.start = this.start.bind(this);
@@ -37,7 +48,10 @@ GoodHipchat.prototype._report = function(event, eventData) {
   };
 
   if(this.options.debug) {
-    console.log(message, eventData);
+    console.log(chalk.bold.red('Message Data:'));
+    console.log(message);
+    console.log(chalk.bold.red('Event Data:'));
+    console.log(eventData);
   } else {
     this.hipchat.notify(this.options.room, message, function(err) {
       if(err) {

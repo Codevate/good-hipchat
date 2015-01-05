@@ -13,8 +13,7 @@ var options = {
         room: 'Room',
         roomToken: '1234',
         color: 'red',
-        debug: true,
-        tags: ['error']
+        debug: true
       }
     ]
   }]
@@ -32,7 +31,11 @@ server.register({
     });
   }
 
-  setTimeout(function() {
-    server.log(['error'], 'Test error');
-  }, 15000);
+  server.route({
+    method: 'GET',
+    path: '/',
+    handler: function(request, reply) {
+      reply(test);
+    }
+  });
 });
