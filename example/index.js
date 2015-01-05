@@ -7,7 +7,7 @@ var options = {
   reporters: [{
     reporter: require('../'),
     args:[
-      { log: '*', response: '*' },
+      { error: '*' },
       {
         auth_token: '1234',
         room: 'Room',

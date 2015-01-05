@@ -6,7 +6,8 @@ var chalk = require('chalk');
 
 var defaults = {
   tags: [],
-  color: 'red',
+  color: 'yellow',
+  notify: false,
   debug: false
 };
 
@@ -40,11 +41,27 @@ GoodHipchat.prototype._report = function(event, eventData) {
     return;
   }
 
+  var text = '';
+
+  if(eventData.data) {
+    if(eventData.data.message) {
+      text = eventData.data.message;
+    } else {
+      text = eventData.data;
+    }
+  } else if(eventData.message) {
+    text = eventData.message;
+  } else if(eventData.error) {
+    text = eventData.error.toString();
+  } else {
+    text = eventData;
+  }
+
   var message = {
     token: this.options.roomToken,
-    message: eventData.data,
-    notify: this.options.notify || false,
-    color: this.options.color || 'yellow'
+    message: text,
+    notify: this.options.notify,
+    color: this.options.color
   };
 
   if(this.options.debug) {
