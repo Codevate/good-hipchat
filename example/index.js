@@ -7,15 +7,37 @@ var options = {
   reporters: [{
     reporter: require('../'),
     args:[
-      { error: '*' },
       {
         auth_token: '1234',
-        room: 'Room',
+        room: 'Devs',
         roomToken: '1234',
-        color: 'red',
         debug: true,
-        formatMessage: function(event) {
-          return event.error.toString() + ' Details: http://example.com?e=something';
+        events: {
+          'error': {
+            '*': {
+              color: 'red',
+              room: 'Emergency Ops',
+              roomToken: '56w34',
+              notify: true,
+              format: function(event) {
+                return event.error.toString() + ' Details: http://example.com?e=something';
+              }
+            }
+          },
+          'log': {
+            'example': {
+              color: 'yellow',
+              format: function(event) {
+                return event.data;
+              }
+            },
+            'error': {
+              color: 'red',
+              format: function(event) {
+                return event.data;
+              }
+            }
+          },
         }
       }
     ]
@@ -38,6 +60,9 @@ server.register({
     method: 'GET',
     path: '/',
     handler: function(request, reply) {
+      server.log(['error', 'example'], 'Should only display once');
+      server.log(['example'], 'Example again');
+      server.log(['not-used'], 'This shouldn\'t be logged');
       reply(new Error('something'));
     }
   });
