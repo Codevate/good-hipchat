@@ -1,4 +1,10 @@
 
+0.1.0 / 2015-01-07
+==================
+
+  * Merge pull request #3 from firstandthird/feature/customize
+  * Allows config based on event and tag.
+
 0.0.5 / 2015-01-05
 ==================
 
