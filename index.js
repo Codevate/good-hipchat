@@ -5,11 +5,10 @@ var Hoek = require('hoek');
 var chalk = require('chalk');
 
 var defaults = {
-  tags: [],
   color: 'yellow',
   notify: false,
   debug: false,
-  formatMessage: function(event) {
+  format: function(event) {
     if(event.message) {
       return event.message;
     } else if(event.error) {
@@ -17,14 +16,26 @@ var defaults = {
     } else {
       return event;
     }
-  }
+  },
+  events: {}
 };
 
-var GoodHipchat = function(events, options) {
+var GoodHipchat = function(options) {
 
   this.options = Hoek.clone(options);
 
   this.options = Hoek.applyToDefaults(defaults, this.options);
+
+  var events = {};
+
+  for(var event in this.options.events) {
+    if(this.options.events[event]['*']) {
+      events[event] = '*';
+      continue;
+    }
+
+    events[event] = Object.keys(this.options.events[event]);
+  }
 
   this.reporter = new GoodReporter(events);
 
@@ -44,28 +55,27 @@ GoodHipchat.prototype.start = function(emitter, callback) {
 GoodHipchat.prototype.stop = function(){};
 
 GoodHipchat.prototype._report = function(event, eventData) {
-  var tags = _.intersection(this.options.tags, eventData.tags);
+  var eventConfig = this.options.events[event];
+  var tagConfig = {};
 
-  if(!tags.length && this.options.tags.length) {
-    return;
+  if(eventConfig['*']) {
+    tagConfig = eventConfig['*'];
+  } else {
+    tagConfig = eventConfig[eventData.tags[0]];
   }
 
-  var text = '';
-
   var message = {
-    token: this.options.roomToken,
-    message: this.options.formatMessage(eventData),
-    notify: this.options.notify,
-    color: this.options.color
+    token: tagConfig.toomToken || this.options.roomToken,
+    message: tagConfig.format ? tagConfig.format(eventData) : this.options.format(eventData),
+    notify: (typeof tagConfig.notify !== 'undefined') ? tagConfig.notify : this.options.notify,
+    color: tagConfig.color || this.options.color
   };
 
   if(this.options.debug) {
-    console.log(chalk.bold.red('Message Data:'));
+    console.log(chalk.bold[message.color]('Message to room:', tagConfig.room || this.options.room));
     console.log(message);
-    console.log(chalk.bold.red('Event Data:'));
-    console.log(eventData);
   } else {
-    this.hipchat.notify(this.options.room, message, function(err) {
+    this.hipchat.notify(tagConfig.room || this.options.room, message, function(err) {
       if(err) {
         console.log('Error sending message to room', err);
       }
