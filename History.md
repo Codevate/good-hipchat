@@ -1,4 +1,9 @@
 
+0.1.1 / 2015-03-02
+==================
+
+  * Fixes issue with multiple tags where the first tag isnt a config key
+
 0.1.0 / 2015-01-07
 ==================
 

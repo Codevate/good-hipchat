@@ -1,6 +1,6 @@
 {
   "name": "good-hipchat",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "description": "Hipchat notifications",
   "main": "index.js",
   "scripts": {
