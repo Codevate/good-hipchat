@@ -61,11 +61,15 @@ GoodHipchat.prototype._report = function(event, eventData) {
   if(eventConfig['*']) {
     tagConfig = eventConfig['*'];
   } else {
-    tagConfig = eventConfig[eventData.tags[0]];
+    _.each(eventData.tags, function(tag) {
+      if (typeof eventConfig[tag] !== undefined) {
+        tagConfig = eventConfig[tag];
+      }
+    });
   }
 
   var message = {
-    token: tagConfig.toomToken || this.options.roomToken,
+    token: tagConfig.roomToken || this.options.roomToken,
     message: tagConfig.format ? tagConfig.format(eventData) : this.options.format(eventData),
     notify: (typeof tagConfig.notify !== 'undefined') ? tagConfig.notify : this.options.notify,
     color: tagConfig.color || this.options.color

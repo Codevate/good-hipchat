@@ -63,6 +63,7 @@ server.register({
       server.log(['error', 'example'], 'Should only display once');
       server.log(['example'], 'Example again');
       server.log(['not-used'], 'This shouldn\'t be logged');
+      server.log(['social-meta', 'twitter', 'error'], { url: 'url', error: new Error('something') });
       reply(new Error('something'));
     }
   });
