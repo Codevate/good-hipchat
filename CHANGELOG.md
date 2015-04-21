@@ -1,4 +1,10 @@
 
+0.3.0 / 2015-04-21
+==================
+
+  * added support to filter response events by statusCode
+
+
 0.2.0 / 2015-04-20
 ==================
 
