@@ -7,7 +7,10 @@ var defaults = {
   color: 'yellow',
   notify: false,
   format: function(event) {
-    if (event.data && typeof event.data == 'string') {
+    if (event.event == 'response') {
+      var query = (event.query) ? JSON.stringify(event.query) : '';
+      return Hoek.format('%s: %s %s %s %s (%sms)', event.instance, event.method, event.path, query, event.statusCode, event.responseTime);
+    } else if (event.data && typeof event.data == 'string') {
       return event.data;
     } else if (event.message) {
       return event.message;
@@ -67,6 +70,10 @@ GoodHipchat.prototype.report = function(eventData) {
         tagConfig = eventConfig[tag];
       }
     });
+  }
+
+  if (eventData.event == 'response' && this._settings.responseCodes && this._settings.responseCodes.indexOf(eventData.statusCode) == -1) {
+    return;
   }
   var message = {
     token: this._settings.roomToken,

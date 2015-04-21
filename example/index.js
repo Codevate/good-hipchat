@@ -2,18 +2,22 @@ var Hapi = require('hapi');
 var server = new Hapi.Server();
 server.connection({ host: 'localhost', port: 8000 });
 
+var config = require('./config.json');
+
 var options = {
   opsInterval: 1000,
   reporters: [{
     reporter: require('../'),
     events: {
       error: '*',
-      log: ['example', 'error']
+      log: ['example', 'error'],
+      response: '*'
     },
     config: {
-      authToken: 'daaf19ba00ad0953b546dec76a2761',
-      roomToken: 'TjyIN1cvptamObk4sKf8ZXyQtd0AnoiIgKhboB0K',
+      authToken: config.authToken,
+      roomToken: config.roomToken,
       room: 'Test',
+      responseCodes: [401],
       customizeEvents: {
         'error': {
           '*': {
@@ -59,7 +63,6 @@ server.register({
       method: 'GET',
       path: '/',
       handler: function(request, reply) {
-        server.log(['example'], 'Example');
         reply('ok');
       }
     }, {
@@ -75,7 +78,13 @@ server.register({
       handler: function(request, reply) {
         reply(new Error('ooops'));
       }
-    },
+    }, {
+      method: 'GET',
+      path: '/unauthorized',
+      handler: function(request, reply) {
+        reply('nope').code(401);
+      }
+    }
 
   ]);
 });
