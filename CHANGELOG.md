@@ -1,4 +1,11 @@
 
+0.4.0 / 2015-04-22
+==================
+
+  * detailed message response if responsePayload is available
+  * add support for prefix and suffix values
+
+
 0.3.0 / 2015-04-21
 ==================
 
