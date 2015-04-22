@@ -17,6 +17,8 @@ var options = {
       authToken: config.authToken,
       roomToken: config.roomToken,
       room: 'Test',
+      prefix: 'This is a prefix',
+      suffix: '<a href="http://google.com">Suffix</a>',
       responseCodes: [401],
       customizeEvents: {
         'error': {

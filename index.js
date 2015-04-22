@@ -6,6 +6,8 @@ var Squeeze = require('good-squeeze').Squeeze;
 var defaults = {
   color: 'yellow',
   notify: false,
+  prefix: '',
+  suffix: '',
   format: function(event) {
     if (event.event == 'response') {
       var query = (event.query) ? JSON.stringify(event.query) : '';
@@ -75,9 +77,19 @@ GoodHipchat.prototype.report = function(eventData) {
   if (eventData.event == 'response' && this._settings.responseCodes && this._settings.responseCodes.indexOf(eventData.statusCode) == -1) {
     return;
   }
+
+  var formatFn = tagConfig.format || this._settings.format;
+  var messageArray = [];
+  if (this._settings.prefix) {
+    messageArray.push(this._settings.prefix);
+  }
+  messageArray.push(formatFn(eventData));
+  if (this._settings.suffix) {
+    messageArray.push(this._settings.suffix);
+  }
   var message = {
     token: this._settings.roomToken,
-    message: tagConfig.format ? tagConfig.format(eventData) : this._settings.format(eventData),
+    message: messageArray.join(' '),
     notify: (typeof tagConfig.notify !== 'undefined') ? tagConfig.notify : this._settings.notify,
     color: tagConfig.color || this._settings.color
   };
