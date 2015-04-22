@@ -28,6 +28,7 @@
     "lodash": "^3.7.0"
   },
   "devDependencies": {
+    "boom": "^2.7.1",
     "good": "^6.1.0",
     "hapi": "^8.0.0"
   }

@@ -1,4 +1,5 @@
 var Hapi = require('hapi');
+var Boom = require('boom');
 var server = new Hapi.Server();
 server.connection({ host: 'localhost', port: 8000 });
 
@@ -6,6 +7,7 @@ var config = require('./config.json');
 
 var options = {
   opsInterval: 1000,
+  responsePayload: true,
   reporters: [{
     reporter: require('../'),
     events: {
@@ -86,7 +88,14 @@ server.register({
       handler: function(request, reply) {
         reply('nope').code(401);
       }
+    }, {
+      method: 'GET',
+      path: '/boom',
+      handler: function(request, reply) {
+        reply(Boom.unauthorized('Not allowed'));
+      }
     }
+
 
   ]);
 });

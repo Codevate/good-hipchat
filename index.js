@@ -11,7 +11,11 @@ var defaults = {
   format: function(event) {
     if (event.event == 'response') {
       var query = (event.query) ? JSON.stringify(event.query) : '';
-      return Hoek.format('%s: %s %s %s %s (%sms)', event.instance, event.method, event.path, query, event.statusCode, event.responseTime);
+      var response = '';
+      if (event.responsePayload && typeof event.responsePayload == 'object' && event.responsePayload.message) {
+        response = event.responsePayload.message;
+      }
+      return Hoek.format('%s: %s %s %s %s (%sms) <b>%s</b>', event.instance, event.method, event.path, query, event.statusCode, event.responseTime, response);
     } else if (event.data && typeof event.data == 'string') {
       return event.data;
     } else if (event.message) {
