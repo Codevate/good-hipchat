@@ -8,6 +8,7 @@ const defaults = {
   notify: false,
   prefix: '',
   suffix: '',
+  customizeEvents: {},
   format: (event) => {
     if (event.event == 'response') {
       const query = (event.query) ? JSON.stringify(event.query) : '';
