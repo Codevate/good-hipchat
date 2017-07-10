@@ -22,14 +22,15 @@
   },
   "homepage": "https://github.com/firstandthird/good-hipchat",
   "dependencies": {
-    "good-squeeze": "^2.0.1",
-    "hipchatter": "^0.2.0",
-    "hoek": "^2.11.0",
-    "lodash": "^3.7.0"
+    "good-squeeze": "^5.0.1",
+    "hipchatter": "^1.0.0",
+    "hoek": "^4.1.0",
+    "lodash": "^4.17.2"
   },
-  "devDependencies": {
-    "boom": "^2.7.1",
-    "good": "^6.1.0",
-    "hapi": "^8.0.0"
+  "peerDependencies": {
+    "good": "7.x.x"
+  },
+  "engines": {
+    "node": ">=4.0.0"
   }
 }
