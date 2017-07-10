@@ -6,49 +6,54 @@ server.connection({ host: 'localhost', port: 8000 });
 var config = require('./config.json');
 
 var options = {
-  opsInterval: 1000,
-  responsePayload: true,
-  reporters: [{
-    reporter: require('../'),
-    events: {
-      error: '*',
-      log: ['example', 'error'],
-      response: '*'
-    },
-    config: {
-      authToken: config.authToken,
-      roomToken: config.roomToken,
-      room: 'Test',
-      prefix: 'This is a prefix',
-      suffix: '<a href="http://google.com">Suffix</a>',
-      responseCodes: [401],
-      customizeEvents: {
-        'error': {
-          '*': {
-            color: 'red',
-            notify: true,
-            format: function(event) {
-              return event.error.toString() + ' Details: http://example.com?e=something';
-            }
+  includes: {
+    response: ['payload']
+  },
+  reporters: {
+    hipchat: [
+      {
+        module: 'good-squeeze',
+        name: 'Squeeze',
+        args: [{ error: '*', log: ['example', 'error'], response: '*' }]
+      },
+      {
+        module: require('../'),
+        args: [{
+          authToken: config.authToken,
+          roomToken: config.roomToken,
+          room: 'Test',
+          prefix: 'This is a prefix',
+          suffix: '<a href="http://google.com">Suffix</a>',
+          responseCodes: [401],
+          customizeEvents: {
+            'error': {
+              '*': {
+                color: 'red',
+                notify: true,
+                format: function(event) {
+                  return event.error.toString() + ' Details: http://example.com?e=something';
+                }
+              }
+            },
+            'log': {
+              'example': {
+                color: 'yellow',
+                format: function(event) {
+                  return event.data;
+                }
+              },
+              'error': {
+                color: 'red',
+                format: function(event) {
+                  return 'ERROR: '+ event.data;
+                }
+              }
+            },
           }
-        },
-        'log': {
-          'example': {
-            color: 'yellow',
-            format: function(event) {
-              return event.data;
-            }
-          },
-          'error': {
-            color: 'red',
-            format: function(event) {
-              return 'ERROR: '+ event.data;
-            }
-          }
-        },
+        }]
       }
-    }
-  }]
+    ]
+  }
 };
 
 server.register({
@@ -95,7 +100,5 @@ server.register({
         reply(Boom.unauthorized('Not allowed'));
       }
     }
-
-
   ]);
 });
