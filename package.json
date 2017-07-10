@@ -22,7 +22,6 @@
   },
   "homepage": "https://github.com/firstandthird/good-hipchat",
   "dependencies": {
-    "good-squeeze": "^5.0.1",
     "hipchatter": "^1.0.0",
     "hoek": "^4.1.0",
     "lodash": "^4.17.2"

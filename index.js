@@ -1,17 +1,17 @@
-var Hipchatter = require('hipchatter');
-var _ = require('lodash');
-var Hoek = require('hoek');
-var Squeeze = require('good-squeeze').Squeeze;
+const Hipchatter = require('hipchatter');
+const _ = require('lodash');
+const Hoek = require('hoek');
+const Stream = require('stream');
 
-var defaults = {
+const defaults = {
   color: 'yellow',
   notify: false,
   prefix: '',
   suffix: '',
-  format: function(event) {
+  format: (event) => {
     if (event.event == 'response') {
-      var query = (event.query) ? JSON.stringify(event.query) : '';
-      var response = '';
+      const query = (event.query) ? JSON.stringify(event.query) : '';
+      let response = '';
       if (event.responsePayload && typeof event.responsePayload == 'object' && event.responsePayload.message) {
         response = event.responsePayload.message;
       }
@@ -28,81 +28,56 @@ var defaults = {
   }
 };
 
-var GoodHipchat = function(events, config) {
+class GoodHipchat extends Stream.Writable {
+  constructor(config) {
 
-  if (!(this instanceof GoodHipchat)) {
-    return new GoodHipchat(events, config);
+    super({ objectMode: true, decodeStrings: false });
+
+    config = config || {};
+    Hoek.assert(config.authToken, 'config.authToken must exist');
+    Hoek.assert(config.roomToken, 'config.roomToken must exist');
+    Hoek.assert(config.room, 'config.room must exist');
+
+    this._settings = Hoek.applyToDefaults(defaults, config);
+    this.hipchat = new Hipchatter(this._settings.authToken);
   }
 
-  config = config || {};
-  Hoek.assert(config.authToken, 'config.authToken must exist');
-  Hoek.assert(config.roomToken, 'config.roomToken must exist');
-  Hoek.assert(config.room, 'config.room must exist');
+  _write(eventData, encoding, callback) {
+    const eventConfig = this._settings.customizeEvents[eventData.event] || {};
+    let tagConfig = {};
 
-  var settings = Hoek.applyToDefaults(defaults, config);
-
-  this._streams = {
-    squeeze: Squeeze(events)
-  };
-  this._eventQueue = [];
-  this._settings = settings;
-
-};
-
-GoodHipchat.prototype.init = function(stream, emitter, callback) {
-
-  var self = this;
-  this.hipchat = new Hipchatter(this._settings.authToken);
-
-  this._streams.squeeze.on('data', function (data) {
-    self.report(data);
-  });
-
-  stream.pipe(this._streams.squeeze);
-
-
-  return callback();
-};
-
-GoodHipchat.prototype.report = function(eventData) {
-  var eventConfig = this._settings.customizeEvents[eventData.event] || {};
-  var tagConfig = {};
-
-  if (eventConfig['*']) {
-    tagConfig = eventConfig['*'];
-  } else {
-    _.each(eventData.tags, function(tag) {
-      if (eventConfig[tag]) {
-        tagConfig = eventConfig[tag];
-      }
-    });
-  }
-
-  if (eventData.event == 'response' && this._settings.responseCodes && this._settings.responseCodes.indexOf(eventData.statusCode) == -1) {
-    return;
-  }
-
-  var formatFn = tagConfig.format || this._settings.format;
-  var messageArray = [];
-  if (this._settings.prefix) {
-    messageArray.push(this._settings.prefix);
-  }
-  messageArray.push(formatFn(eventData));
-  if (this._settings.suffix) {
-    messageArray.push(this._settings.suffix);
-  }
-  var message = {
-    token: this._settings.roomToken,
-    message: messageArray.join(' '),
-    notify: (typeof tagConfig.notify !== 'undefined') ? tagConfig.notify : this._settings.notify,
-    color: tagConfig.color || this._settings.color
-  };
-
-  this.hipchat.notify(this._settings.room, message, function(err) {
-    if(err) {
-      console.log('Error sending message to room', err);
+    if (eventConfig['*']) {
+      tagConfig = eventConfig['*'];
+    } else {
+      _.each(eventData.tags, function(tag) {
+        if (eventConfig[tag]) {
+          tagConfig = eventConfig[tag];
+        }
+      });
     }
-  });
+
+    if (eventData.event == 'response' && this._settings.responseCodes && this._settings.responseCodes.indexOf(eventData.statusCode) == -1) {
+      return callback();
+    }
+
+    const formatFn = tagConfig.format || this._settings.format;
+    const messageArray = [];
+    if (this._settings.prefix) {
+      messageArray.push(this._settings.prefix);
+    }
+    messageArray.push(formatFn(eventData));
+    if (this._settings.suffix) {
+      messageArray.push(this._settings.suffix);
+    }
+    const message = {
+      token: this._settings.roomToken,
+      message: messageArray.join(' '),
+      notify: (typeof tagConfig.notify !== 'undefined') ? tagConfig.notify : this._settings.notify,
+      color: tagConfig.color || this._settings.color
+    };
+
+    this.hipchat.notify(this._settings.room, message, callback);
+  }
 };
 
 module.exports = GoodHipchat;
