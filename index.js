@@ -43,7 +43,7 @@ class GoodHipchat extends Stream.Writable {
     this.hipchat = new Hipchatter(this._settings.authToken);
   }
 
-  _write(eventData, encoding, callback) {
+  _write(eventData, encoding, next) {
     const eventConfig = this._settings.customizeEvents[eventData.event] || {};
     let tagConfig = {};
 
@@ -58,7 +58,7 @@ class GoodHipchat extends Stream.Writable {
     }
 
     if (eventData.event == 'response' && this._settings.responseCodes && this._settings.responseCodes.indexOf(eventData.statusCode) == -1) {
-      return callback();
+      return next();
     }
 
     const formatFn = tagConfig.format || this._settings.format;
@@ -77,7 +77,13 @@ class GoodHipchat extends Stream.Writable {
       color: tagConfig.color || this._settings.color
     };
 
-    this.hipchat.notify(this._settings.room, message, callback);
+    this.hipchat.notify(this._settings.room, message, (err) => {
+      if (err) {
+        console.error('Error sending message to room', err);
+      }
+
+      next();
+    });
   }
 };
 
